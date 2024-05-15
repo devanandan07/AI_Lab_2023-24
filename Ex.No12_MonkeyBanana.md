@@ -1,84 +1,79 @@
-# Ex.No: 13 Learning – Use Supervised Learning  
-### DATE: 22/04/24                                                                           
+# Ex.No: 12  Planning –  Monkey Banana Problem
+### DATE: 13.04.2024                                                                           
 ### REGISTER NUMBER : 212221040036
 ### AIM: 
-To write a program to train the classifier for prediciting diabetes
+To find the sequence of plan for Monkey Banana problem using PDDL Editor.
 ###  Algorithm:
-```
-1. Load, preprocess, and train a neural network model on diabetes data.
-2. Split, scale, and evaluate model accuracy on test data.
-3. Define a function for predicting diabetes based on input variables.
-4. Create a Gradio interface for interactive predictions.
-5. Deploy the interface for users to input health indicators and receive predictions.
-```
-
+Step 1:  Start the program <br> 
+Step 2 : Create a domain for Monkey Banana Problem. <br> 
+Step 3:  Create a domain by specifying predicates. <br> 
+Step 4: Specify the actions GOTO, CLIMB, PUSH-BOX, GET-KNIFE, GRAB-BANANAS in Monkey Banana problem.<br>  
+Step 5:   Define a problem for Monkey Banana problem.<br> 
+Step 6:  Obtain the plan for given problem.<br> 
+Step 7: Stop the program.<br> 
 ### Program:
-```python
-import numpy as np
-import pandas as pd
+```
+(define (domain monkey) (:requirements :strips)
+(:constants monkey box knife bananas glass waterfountain) (:predicates (location ?x)
+(on-floor)
+(at ?m ?x) (hasknife) (onbox ?x) (hasbananas) (hasglass) (haswater))
+;; movement and climbing
+(:action GO-TO
+:parameters (?x ?y)
+:precondition (and (location ?x) (location ?y) (on-floor) (at monkey ?y))
+:effect (and (at monkey ?x) (not (at monkey ?y)))) (:action CLIMB
+:parameters (?x)
+:precondition (and (location ?x) (at box ?x) (at monkey ?x))
+:effect (and (onbox ?x) (not (on-floor)))) (:action PUSH-BOX
+ 
+:parameters (?x ?y)
+:precondition (and (location ?x) (location ?y) (at box ?y) (at monkey ?y) (on-floor))
+:effect (and (at monkey ?x) (not (at monkey ?y)) (at box ?x)	(not (at box ?y))))
+;; getting bananas (:action GET-KNIFE
+:parameters (?y)
+:precondition (and (location ?y) (at knife ?y) (at monkey ?y))
+:effect (and (hasknife) (not (at knife ?y)))) (:action GRAB-BANANAS
+:parameters (?y)
+:precondition (and (location ?y) (hasknife)
+(at bananas ?y) (onbox ?y))
+:effect (hasbananas))
+;; getting water (:action PICKGLASS
+:parameters (?y)
+:precondition (and (location ?y) (at glass ?y) (at monkey ?y))
+:effect (and (hasglass) (not (at glass ?y)))) (:action GETWATER
+:parameters (?y)
+:precondition (and (location ?y) (hasglass) (at waterfountain ?y)
+(at monkey ?y) (onbox ?y))
+:effect (haswater)))
 
-pip install gradio
-
-pip install typing-extensions --upgrade
-
-!python --version
-
-pip install --upgrade typing
-
-import gradio as gr
-
-import pandas as pd
-
-cd /content/gdrive/MyDrive/demo/gradio_project-main
-
-#get the data
-data = pd.read_csv('/content/diabetes.csv')
-data.head()
-
-print(data.columns)
-
-x = data.drop(['Outcome'], axis=1)
-y = data['Outcome']
-print(x[:5])
-
-#split data
-from sklearn.model_selection import train_test_split
-
-x_train, x_test, y_train, y_test= train_test_split(x,y)
-
-#scale data
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-x_train_scaled = scaler.fit_transform(x_train)
-x_test_scaled = scaler.fit_transform(x_test)
-
-#instatiate model
-from sklearn.neural_network import MLPClassifier
-model = MLPClassifier(max_iter=1000, alpha=1)
-model.fit(x_train, y_train)
-print("Model Accuracy on training set:", model.score(x_train, y_train))
-print("Model Accuracy on Test Set:", model.score(x_test, y_test))
-
-print(data.columns)
-
-#create a function for gradio
-def diabetes(Pregnancies, Glucose, Blood_Pressure, SkinThickness, Insulin, BMI,Diabetes_Pedigree, Age):
-    x = np.array([Pregnancies,Glucose,Blood_Pressure,SkinThickness,Insulin,BMI,Diabetes_Pedigree,Age])
-    prediction = model.predict(x.reshape(1, -1))
-    if(prediction==0):
-      return "NO"
-    else:
-      return "YES"
-
-outputs = gr.Textbox()
-app = gr.Interface(fn=diabetes, inputs=['number','number','number','number','number','number','number','number'], outputs=outputs,description="Detection of Diabeties")
-app.launch(share=True)
 ```
 
-### Output:
-![image](https://github.com/Bhargava-Shankar/AI_Lab_2023-24/assets/85554376/e921a004-8ec7-415f-8fab-dcaa71758db2)
+
+
+
+
+
+
+
+### Input 
+
+Problem :
+```
+(define (problem pb1)
+(:domain monkey)
+(:objects p1 p2 p3 p4 bananas monkey box knife) (:init (location p1)
+(location p2) (location p3) (location p4) (at monkey p1) (on-floor)
+(at box p2)
+(at bananas p3) (at knife p4)
+)
+(:goal (and (hasbananas)))
+)
+
+```
+### Output/Plan:
+![image](https://github.com/MilitantVlr/Ex-12_Monkeybanana/assets/121683193/30e99c58-ac4d-4639-8892-950ef9a518c5)
 
 
 
 ### Result:
-Thus the system was trained successfully and the prediction was carried out.
+Thus the plan was found for the initial and goal state of given problem.
